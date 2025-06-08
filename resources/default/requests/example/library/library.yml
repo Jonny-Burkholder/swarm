@@ -1,0 +1,30 @@
+collection: fake library example
+baseUrl: fakelibrary.com/api/v1
+kind: http
+auth:
+  type: basic
+  username: {AUTH_USERNAME}
+  password: {AUTH_PASSWORD}
+endpoints:
+  - books:
+      - get:
+          params:
+            pagination: false
+            detailed: true
+          assert:
+            status_code: 200
+            response_length:
+              greater_than: 1 #TODO: this isn't actually implemented yet
+      - get:
+          params:
+            author: "Steven Erikson"
+      - post:
+          body:
+            title: "Midnight Tides"
+            publication_date: "April 2007"
+          assert:
+            status_code: 201
+  - books/{id}:
+      - delete:
+          assert:
+            status_code: 201
