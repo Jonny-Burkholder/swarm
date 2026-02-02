@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"net/http"
 	"net/url"
-	"sync"
 
 	"github.com/jonny-burkholder/swarm/internal/models"
 )
@@ -15,10 +14,17 @@ import (
 // syncronously or asyncronously. The function returns a slice of type chan []models.Request, as each
 // worker will have its own channel to receive requests on, so that the caller can trivially keep track
 // of the number of runs, and close each channel when the runs are complete
-func newWorkers(numWorkers int, resChan chan []models.Result, wg *sync.WaitGroup, async bool, client ...*http.Client) []chan []models.Request {
+func newWorkers(numWorkers int, resChan chan []models.Result, doneChan chan struct{}, async bool, client ...*http.Client) chan chan []models.Request {
 	res := make([]chan []models.Request, numWorkers)
 
-	// TODO: something with the client
+	var workerClient *http.Client
+	if len(client) > 0 {
+		workerClient = client[0]
+	}
+
+	// create a buffered channel that will tell the caller what the next available worker is
+	// 1/4 of the number of workers ought to do it
+	nextChan := make(chan chan []models.Request, numWorkers/4)
 
 	// slightly uglier than checking in the loop,
 	// but I'm guessing more performant, if slightly
@@ -28,6 +34,9 @@ func newWorkers(numWorkers int, resChan chan []models.Result, wg *sync.WaitGroup
 			wrk := asyncWorker{
 				requestChan: c,
 				resultChan:  resChan,
+				nextChan:    nextChan,
+				doneChan:    doneChan,
+				client:      workerClient,
 			}
 			res[i] = c
 
@@ -39,6 +48,9 @@ func newWorkers(numWorkers int, resChan chan []models.Result, wg *sync.WaitGroup
 			wrk := syncWorker{
 				requestChan: c,
 				resultChan:  resChan,
+				nextChan:    nextChan,
+				doneChan:    doneChan,
+				client:      workerClient,
 			}
 			res[i] = c
 
@@ -46,20 +58,22 @@ func newWorkers(numWorkers int, resChan chan []models.Result, wg *sync.WaitGroup
 		}
 	}
 
-	return res
+	return nextChan
 }
 
 type syncWorker struct {
-	wg          *sync.WaitGroup
 	requestChan chan []models.Request
 	resultChan  chan []models.Result
+	nextChan    chan chan []models.Request
+	doneChan    chan struct{}
 	client      *http.Client
 }
 
 type asyncWorker struct {
-	wg          *sync.WaitGroup
 	requestChan chan []models.Request
 	resultChan  chan []models.Result
+	nextChan    chan chan []models.Request
+	doneChan    chan struct{}
 	client      *http.Client
 }
 
@@ -68,6 +82,11 @@ func (w syncWorker) run() {
 	if w.client == nil {
 		w.client = http.DefaultClient
 	}
+
+	go func() {
+		<-w.doneChan
+		close(w.requestChan)
+	}()
 
 	for requests := range w.requestChan {
 		results := make([]models.Result, len(requests))
@@ -126,6 +145,7 @@ func (w syncWorker) run() {
 		}
 		// return the results to the resultchan
 		w.resultChan <- results
+		w.nextChan <- w.requestChan
 	}
 }
 

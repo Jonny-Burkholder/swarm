@@ -5,16 +5,18 @@ import (
 	"fmt"
 )
 
-var ErrCollection = errors.New("Not all collections completed successfully")
+var ErrCollection = errors.New("not all collections completed successfully")
 
 type collectionError string
 
 func (e collectionError) Error() string {
-	return fmt.Sprintf("SWARM encountered a problem with collection #%s", e)
+	msg := e
+	return fmt.Sprintf("SWARM encountered a problem with collection #%s", msg)
 }
 
 type runError int
 
 func (e runError) Error() string {
-	return fmt.Sprintf("SWARM encountered a problem with run #%d", e)
+	id := e
+	return fmt.Sprintf("SWARM encountered a problem with run #%d", id)
 }

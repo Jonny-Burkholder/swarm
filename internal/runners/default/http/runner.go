@@ -40,24 +40,22 @@ func (runner *defaultRunner) Run(collections []models.Collection) error {
 	// TODO: make collections run async if async
 	// TODO: handle passing in an http client
 	// for each collection
-	// TODO: I messed up the nesting here, workers should coordinate to
-	// do the number of runs, instead of being multiplicative
 	for _, collection := range collections {
 		// create # workers for # concurrent runs
 		resultChan := make(chan []models.Result)
-		wg := &sync.WaitGroup{}
-		workers := newWorkers(runner.Concurrent, resultChan, wg, runner.Async)
+		doneChan := make(chan struct{})
+		nextChan := newWorkers(runner.Concurrent, resultChan, doneChan, runner.Async)
 		// have worker do runs until run counter is complete
 
-		// naive implementation to cycle through workers
+		// listen on the "next" channel for the next worker to be ready
 		go func() {
-			for i := range runner.Runs {
-				index := i % runner.Concurrent
-				workers[index] <- collection.Requests
+			for next := range nextChan {
+				next <- collection.Requests
 			}
 		}()
 
-		doneChan := make(chan struct{})
+		wg := &sync.WaitGroup{}
+		wg.Add(runner.Runs)
 
 		go func() {
 			wg.Wait()
@@ -79,10 +77,8 @@ func (runner *defaultRunner) Run(collections []models.Collection) error {
 				id++      // increment id
 				wg.Done() // decrement wait group
 			case <-doneChan:
-				for _, worker := range workers {
-					close(worker)
-				}
-				break selectloop // putting the label to shut the linter up
+				close(nextChan)  // this might cause deadlock
+				break selectloop // using a label to shut the linter up
 			}
 		}
 	}
