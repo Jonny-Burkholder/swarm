@@ -1,6 +1,32 @@
 # swarm
 The ultimate API testing tool
 
+NOTE: some of this functionality is still in progress. If you are reading this at the time of install, not all SWARM features may be available.
+
+## Installation
+
+### Linux
+
+Run go install:
+
+``` bash
+go install https://github.com/Jonny-Burkholder/swarm
+```
+
+Set the `SWARMPATH` environment variable on your system:
+
+```bash
+export SWARMPATH=usr/local/swarm
+```
+
+Your swarmpath can be any directory you choose. This is the default location swarm will look for things like config and test collections. Alternatively, you can pass those values in as flags.
+
+## Usage
+
+The main function of swarm is `test`. If you have your SWARMPATH set up, swarm will first look there for a default test suite and config. If neither is set, swarm will error and print usage instructions.
+
+For additional information, run `swarm --help`, or for subcommand usage run `swarm {subcommand} --help`
+
 ## API Testing
 
 SWARM exists to test your API in every conceivable way! Made primarily for load testing, SWARM is also more than capable of running functional test suites, replacing cumbersome software with simple YAML suites
