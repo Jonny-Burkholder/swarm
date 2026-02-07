@@ -23,25 +23,25 @@ Your swarmpath can be any directory you choose. This is the default location swa
 
 ## Usage
 
-The main function of swarm is `test`. If you have your SWARMPATH set up, swarm will first look there for a default test suite and config. If neither is set, swarm will error and print usage instructions.
+The main function of swarm is `test`. If you have your SWARMPATH set up, swarm will first look there for a default test suite and config. If no config is set, swarm will use the default config settings (print your config settings with `swarm config`. If no test suite is selected, swarm will error and print usage instructions.
 
 For additional information, run `swarm --help`, or for subcommand usage run `swarm {subcommand} --help`
 
-## API Testing
+### API Testing
 
 SWARM exists to test your API in every conceivable way! Made primarily for load testing, SWARM is also more than capable of running functional test suites, replacing cumbersome software with simple YAML suites
 
-## Benchmarking
+### Benchmarking
 
 In addition to sending requests and receiving responses, SWARM collects benchmarking data to see where your API weak and strong points are. Couple this with robuts profiling to optimize your APIs.
 
 Save runs to compare api versions
 
-## Compare
+### Compare
 
 Create and server html charts comparing different run
 
-## Easy test suites
+### Easy test suites
 
 Instead of hand-writing test runs or using curl (nothing wrong with curl!), define simple YAML test suites and run them in one line from the terminal
 
