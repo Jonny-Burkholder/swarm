@@ -23,9 +23,102 @@ Your swarmpath can be any directory you choose. This is the default location swa
 
 ## Usage
 
-The main function of swarm is `test`. If you have your SWARMPATH set up, swarm will first look there for a default test suite and config. If no config is set, swarm will use the default config settings (print your config settings with `swarm config`. If no test suite is selected, swarm will error and print usage instructions.
+The main function of swarm is `test`. If you have your SWARMPATH set up, swarm will first look there for a default test suite and config. If no config is set, swarm will use the default config settings. If no test suite is selected, swarm will error and print usage instructions.
 
 For additional information, run `swarm --help`, or for subcommand usage run `swarm {subcommand} --help`
+
+### Configuration Management
+
+SWARM uses a configuration file to store default values for benchmark runs. This allows you to set preferences once and use them across all your test runs.
+
+#### Viewing Current Configuration
+
+To view your current default configuration:
+
+```bash
+swarm config --show
+```
+
+**Example Output:**
+```
+Current configuration:
+  Runs:       1
+  Concurrent: 1
+  Async:      false
+```
+
+#### Updating Configuration
+
+Update your default configuration using flags:
+
+```bash
+swarm config --runs 100 --concurrent 10
+```
+
+**Example Output:**
+```
+Configuration updated successfully!
+  Runs:       100
+  Concurrent: 10
+  Async:      false
+```
+
+#### Configuration Options
+
+- `--runs` or `-r`: Set the default number of benchmark runs
+- `--concurrent` or `-n`: Set the default number of concurrent workers
+- `--async` or `-a`: Set the default async behavior
+- `--show` or `-s`: Display the current configuration
+
+#### Configuration Storage
+
+Configuration is stored as a YAML file at `$SWARMPATH/config.yaml`. You can also edit this file directly:
+
+```yaml
+runs: 100
+concurrent: 10
+async: false
+```
+
+**Note:** The `SWARMPATH` environment variable must be set for configuration management to work. If not set, swarm will return an error message
+
+### Available Commands
+
+SWARM provides several commands for different testing and benchmarking needs:
+
+#### `swarm benchmark` (or `swarm bench`)
+Run API benchmarks against your test collections.
+
+**Example:**
+```bash
+swarm benchmark --collection tests.yml --runs 100 --concurrent 10
+```
+
+#### `swarm compare` (or `swarm comp`)
+Compare results from different benchmark runs.
+
+**Example:**
+```bash
+swarm compare result1.json result2.json
+```
+
+#### `swarm config`
+View or update default configuration settings.
+
+**Examples:**
+```bash
+# View current config
+swarm config --show
+
+# Update defaults
+swarm config --runs 100 --concurrent 10
+```
+
+#### `swarm help`
+Display help information about available commands.
+
+#### `swarm version`
+Display the current version of swarm.
 
 ### API Testing
 
@@ -40,6 +133,10 @@ Save runs to compare api versions
 ### Compare
 
 Create and server html charts comparing different run
+
+### Config
+
+Manage configuration
 
 ### Easy test suites
 
