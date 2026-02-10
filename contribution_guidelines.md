@@ -14,3 +14,7 @@ So you're interested in contributing? Great! Glad to have you aboard. We want to
 ## Writing tests
 
 We want all code that can be unit tested to be unit tested. Tests should be clearly named and table-driven. E.G. There should be a slice of test values that contain input and expected result. For more information on my preferences for writing tests, please refer to my [golang test tutorial](https://github.com/Jonny-Burkholder/go-test-tutorial)
+
+## Local development
+
+In order to not run over on github actions usage, please try to run `go test ./...` and `golangci-lint run` locally to make sure there are no issues before pushing to an open PR. Follow the [instructions](https://golangci-lint.run/docs/welcome/install/local/) for installing golangci-lint
