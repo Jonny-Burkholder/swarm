@@ -7,6 +7,7 @@ import (
 
 	"github.com/jonny-burkholder/swarm/cmd/benchmark"
 	"github.com/jonny-burkholder/swarm/cmd/compare"
+	"github.com/jonny-burkholder/swarm/cmd/config"
 )
 
 func main() {
@@ -36,6 +37,8 @@ func main() {
 		err = runBenchmark(os.Args[2:], verbose, quiet)
 	case "compare", "comp":
 		err = runCompare(os.Args[2:], verbose, quiet)
+	case "config":
+		err = runConfig(os.Args[2:], verbose, quiet)
 	case "help", "-h", "--help":
 		printUsage()
 		return
@@ -107,6 +110,23 @@ func runCompare(args []string, verbose, quiet bool) error {
 	return cmd.Run(remainingArgs)
 }
 
+func runConfig(args []string, verbose, quiet bool) error {
+	cmd := config.NewConfigCommand()
+	
+	fs := flag.NewFlagSet("config", flag.ExitOnError)
+	cmd.SetupFlags(fs)
+	
+	fs.BoolVar(&verbose, "verbose", verbose, "Enable verbose output")
+	fs.BoolVar(&verbose, "v", verbose, "Enable verbose output (short)")
+	fs.BoolVar(&quiet, "quiet", quiet, "Suppress all output except errors")
+	fs.BoolVar(&quiet, "q", quiet, "Suppress all output except errors (short)")
+	
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	
+	return cmd.Run()
+}
 func printUsage() {
 	fmt.Println("swarm - The ultimate API testing and benchmarking tool")
 	fmt.Println()
@@ -116,6 +136,7 @@ func printUsage() {
 	fmt.Println("Available Commands:")
 	fmt.Println("  benchmark, bench    Run API benchmarks")
 	fmt.Println("  compare, comp       Compare benchmark results")
+	fmt.Println("  config              Manage configuration")
 	fmt.Println("  help               Show this help message")
 	fmt.Println("  version            Show version information")
 	fmt.Println()
