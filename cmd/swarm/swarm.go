@@ -22,5 +22,5 @@ type Swarm struct {
 }
 
 type threshold struct {
-	typ thresholdType
+	// typ thresholdType
 }

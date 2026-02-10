@@ -1,0 +1,44 @@
+linters:
+  default: standard
+  enable: 
+    - bodyclose
+    - copyloopvar
+    - cyclop
+    - depguard
+    - dupl
+    - err113
+    - exhaustive
+    - exhaustruct
+    - exptostd
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - gocritic
+    - godoclint
+    - godox
+    - gosec
+    - govet
+    - iface
+    - ineffassign
+    - intrange
+    - ireturn
+    - lll
+    - misspell
+    - mnd
+    - modernize
+    - nestif
+    - nilnesserr
+    - nilnil
+    - nlreturn
+    - noctx
+    - nolintlint
+    - nonamedreturns
+    - nosprintfhostport
+    - prealloc
+    - predeclared
+    - sloglint
+    - staticcheck
+    - unconvert
+  setting:
+    funlen:
+      lines: 150
